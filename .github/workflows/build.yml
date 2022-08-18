@@ -45,6 +45,15 @@ jobs:
               git config --global --add safe.directory $(cygpath -u "${{ github.workspace }}/${repo}")
           done
 
+      - name: install linux_compat
+        env:
+          SHELLOPTS: igncr
+          CHERE_INVOKING: 1
+        shell: C:\cygwin\bin\bash.exe -eo pipefail '{0}'
+        run: |
+          git clone https://github.com/ookiineko/linux_compat.git /usr/include/linux_compat \
+                    -b main --depth=1 --single-branch --no-tags --recurse-submodules --shallow-submodules
+
       - name: build googletest
         env:
           SHELLOPTS: igncr

@@ -33,6 +33,8 @@ the Alpine Linux [android-tools package][alpine-linux] which I maintain.
 
 # Dependencies
 
+On Cygwin please install [these headers][linux_compat] to /usr/include.
+
 The following libraries are required by android-tools:
 
 1. [PCRE][PCRE]
@@ -104,3 +106,4 @@ have been copied from Anatol's ruby script.
 [zstd]: https://facebook.github.io/zstd/
 [lz4]: https://github.com/lz4/lz4
 [anatol.pomozov]: https://github.com/anatol
+[linux_compat]: https://github.com/ookiineko/linux_compat

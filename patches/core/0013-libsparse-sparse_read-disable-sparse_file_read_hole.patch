@@ -1,0 +1,28 @@
+From 6414425cd00903b5e13be1d4c101b4c1425b1a97 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sat, 15 Oct 2022 17:49:48 +0800
+Subject: [PATCH] libsparse: sparse_read: disable sparse_file_read_hole
+
+* we probably don't have SEEK_DATA and SEEK_HOLE on Cygwin
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ libsparse/sparse_read.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libsparse/sparse_read.cpp b/libsparse/sparse_read.cpp
+index 028b6bed..a4c77587 100644
+--- a/libsparse/sparse_read.cpp
++++ b/libsparse/sparse_read.cpp
+@@ -516,7 +516,7 @@ static int sparse_file_read_normal(struct sparse_file* s, int fd) {
+   return ret;
+ }
+ 
+-#ifdef __linux__
++#if 0
+ static int sparse_file_read_hole(struct sparse_file* s, int fd) {
+   int ret;
+   uint32_t* buf = (uint32_t*)malloc(s->block_size);
+-- 
+2.38.0
+

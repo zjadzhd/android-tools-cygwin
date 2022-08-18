@@ -1,0 +1,76 @@
+From fe1d5b45d78bf00d9cf9526f501e0482d168dc91 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 23 Oct 2022 07:03:30 +0800
+Subject: [PATCH] fix Cygwin headers
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ ext4_utils/ext4_utils.cpp | 4 +++-
+ ext4_utils/wipe.cpp       | 4 ++++
+ libfec/fec_open.cpp       | 2 +-
+ verity/fec/image.cpp      | 2 +-
+ 4 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/ext4_utils/ext4_utils.cpp b/ext4_utils/ext4_utils.cpp
+index 632d829..c979e2a 100644
+--- a/ext4_utils/ext4_utils.cpp
++++ b/ext4_utils/ext4_utils.cpp
+@@ -30,10 +30,12 @@
+ #include <sys/ioctl.h>
+ #endif
+ 
+-#if defined(__linux__)
++#if defined(__linux__) && !defined(__CYGWIN__)
+ #include <linux/fs.h>
+ #elif defined(__APPLE__) && defined(__MACH__)
+ #include <sys/disk.h>
++#elif defined(__CYGWIN__)
++#include <cygwin/fs.h>
+ #endif
+ 
+ #include "helpers.h"
+diff --git a/ext4_utils/wipe.cpp b/ext4_utils/wipe.cpp
+index 445c973..f439449 100644
+--- a/ext4_utils/wipe.cpp
++++ b/ext4_utils/wipe.cpp
+@@ -24,7 +24,11 @@
+ 
+ #if defined(__linux__)
+ 
++#if !defined(__CYGWIN__)
+ #include <linux/fs.h>
++#else
++#include <cygwin/fs.h>
++#endif
+ #include <sys/ioctl.h>
+ 
+ #include "helpers.h"
+diff --git a/libfec/fec_open.cpp b/libfec/fec_open.cpp
+index 8ea728e..d64d1f2 100644
+--- a/libfec/fec_open.cpp
++++ b/libfec/fec_open.cpp
+@@ -21,7 +21,7 @@
+ #include <ext4_utils/ext4_sb.h>
+ #include <squashfs_utils.h>
+ 
+-#if defined(__linux__)
++#if defined(__linux__) && !defined(__CYGWIN__)
+     #include <linux/fs.h>
+ #elif defined(__APPLE__)
+     #include <sys/disk.h>
+diff --git a/verity/fec/image.cpp b/verity/fec/image.cpp
+index d719e7c..d7c3bc8 100644
+--- a/verity/fec/image.cpp
++++ b/verity/fec/image.cpp
+@@ -35,7 +35,7 @@ extern "C" {
+ #include <sparse/sparse.h>
+ #include "image.h"
+ 
+-#if defined(__linux__)
++#if defined(__linux__) && !defined(__CYGWIN__)
+     #include <linux/fs.h>
+ #elif defined(__APPLE__)
+     #include <sys/disk.h>
+-- 
+2.38.1
+

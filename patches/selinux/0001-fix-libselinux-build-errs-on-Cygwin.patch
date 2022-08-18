@@ -1,0 +1,67 @@
+From 37bf9e1c6aef298d44a61280c474952772263c75 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Thu, 18 Aug 2022 17:02:18 +0800
+Subject: [PATCH] fix libselinux build errs on Cygwin
+
+- we don't have a real mount()
+- we have pthread so pthread_once() is never NULL and
+  thus we will never need the manual implemetation.
+  also added an assert() to avoid undefined behaviors
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ libselinux/src/load_policy.c      | 4 ++--
+ libselinux/src/selinux_internal.h | 9 +++------
+ 2 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/libselinux/src/load_policy.c b/libselinux/src/load_policy.c
+index d8c715e..3b4a072 100644
+--- a/libselinux/src/load_policy.c
++++ b/libselinux/src/load_policy.c
+@@ -11,7 +11,7 @@
+ #include <string.h>
+ #include <errno.h>
+ #include "selinux_internal.h"
+-#ifndef ANDROID
++#if 0
+ #include <sepol/sepol.h>
+ #include <sepol/policydb.h>
+ #endif
+@@ -46,7 +46,7 @@ int security_load_policy(void *data, size_t len)
+ }
+ 
+ 
+-#ifndef ANDROID
++#if 0
+ #undef max
+ #define max(a, b) (((a) > (b)) ? (a) : (b))
+ 
+diff --git a/libselinux/src/selinux_internal.h b/libselinux/src/selinux_internal.h
+index 27e9ac5..3ba663b 100644
+--- a/libselinux/src/selinux_internal.h
++++ b/libselinux/src/selinux_internal.h
+@@ -1,5 +1,6 @@
+ #include <selinux/selinux.h>
+ #include <pthread.h>
++#include <assert.h>
+ 
+ 
+ extern int require_seusers ;
+@@ -14,12 +15,8 @@ extern int selinux_page_size ;
+ /* Call handler iff the first call.  */
+ #define __selinux_once(ONCE_CONTROL, INIT_FUNCTION)	\
+ 	do {						\
+-		if (pthread_once != NULL)		\
+-			pthread_once (&(ONCE_CONTROL), (INIT_FUNCTION));  \
+-		else if ((ONCE_CONTROL) == PTHREAD_ONCE_INIT) {		  \
+-			INIT_FUNCTION ();		\
+-			(ONCE_CONTROL) = 2;		\
+-		}					\
++		assert (pthread_once != NULL);		\
++		pthread_once (&(ONCE_CONTROL), (INIT_FUNCTION));  \
+ 	} while (0)
+ 
+ /* Pthread key macros */
+-- 
+2.38.0
+

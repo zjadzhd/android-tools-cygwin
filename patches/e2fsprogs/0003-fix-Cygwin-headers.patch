@@ -1,0 +1,114 @@
+From f5d8befa0e18724a116e151487fa0e21e203b0bf Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 23 Oct 2022 08:12:26 +0800
+Subject: [PATCH] fix Cygwin headers
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ lib/config.h        |  4 ++++
+ lib/ext2fs/fiemap.h |  4 ++++
+ misc/mke2fs.c       | 14 +++++++++++++-
+ 3 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/lib/config.h b/lib/config.h
+index 6ac16fe..e99f164 100644
+--- a/lib/config.h
++++ b/lib/config.h
+@@ -58,13 +58,17 @@
+ #if defined(__linux__)
+ # define HAVE_EXT2_IOCTLS 1
+ # define HAVE_FALLOCATE 1
++#if !defined(__CYGWIN__)
+ # define HAVE_LINUX_FD_H 1
+ # define HAVE_LINUX_TYPES_H 1
++#endif
+ # define HAVE_LSEEK64 1
+ # define HAVE_LSEEK64_PROTOTYPE 1
+ # define HAVE_MNTENT_H 1
+ # define HAVE_PREAD64 1
+ # define HAVE_PWRITE64 1
+ # define HAVE_SETMNTENT 1
++#if !defined(__CYGWIN__)
+ # define HAVE_SYS_PRCTL_H 1
+ #endif
++#endif
+diff --git a/lib/ext2fs/fiemap.h b/lib/ext2fs/fiemap.h
+index 33ab8fb..cb10d5d 100644
+--- a/lib/ext2fs/fiemap.h
++++ b/lib/ext2fs/fiemap.h
+@@ -41,6 +41,8 @@ struct fiemap {
+ #endif
+ };
+ 
++#if !defined(__CYGWIN__)
++
+ #if defined(__linux__) && !defined(FS_IOC_FIEMAP)
+ #define FS_IOC_FIEMAP	_IOWR('f', 11, struct fiemap)
+ #endif
+@@ -57,6 +59,8 @@ struct fiemap {
+ #define EXT4_STATE_FLAG_EXT_PRECACHED	0x00000001
+ #endif
+ 
++#endif
++
+ #define FIEMAP_MAX_OFFSET	(~0ULL)
+ 
+ #define FIEMAP_FLAG_SYNC	0x00000001 /* sync file data before map */
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index bd60d49..b29b468 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -1635,7 +1635,9 @@ profile_error:
+ 	memset(&fs_param, 0, sizeof(struct ext2_super_block));
+ 	fs_param.s_rev_level = 1;  /* Create revision 1 filesystems now */
+ 
++#ifndef __CYGWIN__
+ 	if (is_before_linux_ver(2, 2, 0))
++#endif
+ 		fs_param.s_rev_level = 0;
+ 
+ 	if (argc && *argv) {
+@@ -2147,7 +2149,11 @@ profile_error:
+ 
+ 		if (use_bsize == -1) {
+ 			use_bsize = sys_page_size;
+-			if (is_before_linux_ver(2, 6, 0) && use_bsize > 4096)
++#ifdef __CYGWIN__
++			if (use_bsize > 4096)
++#else
++            if (is_before_linux_ver(2, 6, 0) && use_bsize > 4096)
++#endif
+ 				use_bsize = 4096;
+ 		}
+ 		if (lsector_size && use_bsize < lsector_size)
+@@ -2378,21 +2384,27 @@ profile_error:
+ 			blocksize, sys_page_size);
+ 	}
+ 
++#ifndef __CYGWIN__
+ 	/* Metadata checksumming wasn't totally stable before 3.18. */
+ 	if (is_before_linux_ver(3, 18, 0) &&
+ 	    ext2fs_has_feature_metadata_csum(&fs_param))
+ 		fprintf(stderr, _("Suggestion: Use Linux kernel >= 3.18 for "
+ 			"improved stability of the metadata and journal "
+ 			"checksum features.\n"));
++#endif
+ 
+ 	/*
+ 	 * On newer kernels we do have lazy_itable_init support. So pick the
+ 	 * right default in case ext4 module is not loaded.
+ 	 */
++#ifndef __CYGWIN__
+ 	if (is_before_linux_ver(2, 6, 37))
++#endif
+ 		lazy_itable_init = 0;
++#ifndef __CYGWIN__
+ 	else
+ 		lazy_itable_init = 1;
++#endif
+ 
+ 	if (access("/sys/fs/ext4/features/lazy_itable_init", R_OK) == 0)
+ 		lazy_itable_init = 1;
+-- 
+2.38.1
+

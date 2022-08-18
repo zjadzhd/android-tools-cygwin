@@ -1,0 +1,115 @@
+From 03d1e4fde4e413aecf9ba638e3cd1e5415e2035c Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 23 Oct 2022 09:05:39 +0800
+Subject: [PATCH] fix Cygwin headers
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ fsck/mount.c             | 4 ++++
+ include/android_config.h | 4 ++++
+ lib/libf2fs.c            | 8 ++++++++
+ mkfs/f2fs_format.c       | 4 ++++
+ 4 files changed, 20 insertions(+)
+
+diff --git a/fsck/mount.c b/fsck/mount.c
+index c928a15..2483e3e 100644
+--- a/fsck/mount.c
++++ b/fsck/mount.c
+@@ -957,6 +957,9 @@ int validate_super_block(struct f2fs_sb_info *sbi, enum SB_ADDR sb_addr)
+ 					sizeof(struct f2fs_super_block));
+ 
+ 	if (!sanity_check_raw_super(sbi->raw_super, sb_addr)) {
++#ifdef __CYGWIN__
++        strncpy(c.version, "5.4.0-128-generic\0", sizeof(c.version));
++#else
+ 		/* get kernel version */
+ 		if (c.kd >= 0) {
+ 			dev_read_version(c.version, 0, VERSION_NAME_LEN);
+@@ -964,6 +967,7 @@ int validate_super_block(struct f2fs_sb_info *sbi, enum SB_ADDR sb_addr)
+ 		} else {
+ 			get_kernel_uname_version(c.version);
+ 		}
++#endif
+ 
+ 		/* build sb version */
+ 		memcpy(c.sb_version, sbi->raw_super->version, VERSION_NAME_LEN);
+diff --git a/include/android_config.h b/include/android_config.h
+index cae1669..49ca7e7 100644
+--- a/include/android_config.h
++++ b/include/android_config.h
+@@ -2,13 +2,17 @@
+ #define HAVE_BYTESWAP_H 1
+ #define HAVE_FCNTL_H 1
+ #define HAVE_FALLOC_H 1
++#if !defined(__CYGWIN__)
+ #define HAVE_LINUX_HDREG_H 1
+ #define HAVE_LINUX_LIMITS_H 1
++#endif
+ #define HAVE_POSIX_ACL_H 1
++#if !defined(__CYGWIN__)
+ #define HAVE_LINUX_TYPES_H 1
+ #define HAVE_LINUX_XATTR_H 1
+ #define HAVE_LINUX_FS_H 1
+ #define HAVE_LINUX_FIEMAP_H 1
++#endif
+ #define HAVE_MNTENT_H 1
+ #define HAVE_STDLIB_H 1
+ #define HAVE_STRING_H 1
+diff --git a/lib/libf2fs.c b/lib/libf2fs.c
+index 420dfda..c043e3d 100644
+--- a/lib/libf2fs.c
++++ b/lib/libf2fs.c
+@@ -56,6 +56,10 @@
+ #define wchar_t	int
+ #endif
+ 
++#ifdef __CYGWIN__
++#include <cygwin/fs.h>
++#endif
++
+ /*
+  * UTF conversion codes are Copied from exfat tools.
+  */
+@@ -947,6 +951,9 @@ int get_device_info(int i)
+ 		}
+ 	}
+ 
++#ifdef __CYGWIN__
++    MSG(0, "Warn: Faking kernel version on Cygwin!\n");
++#else
+ 	if (c.kd == -1) {
+ #if !defined(WITH_ANDROID) && defined(__linux__)
+ 		c.kd = open("/proc/version", O_RDONLY);
+@@ -956,6 +963,7 @@ int get_device_info(int i)
+ 			c.kd = -2;
+ 		}
+ 	}
++#endif
+ 
+ 	if (c.sparse_mode) {
+ 		dev->total_sectors = c.device_size / dev->sector_size;
+diff --git a/mkfs/f2fs_format.c b/mkfs/f2fs_format.c
+index 864d285..ad17345 100644
+--- a/mkfs/f2fs_format.c
++++ b/mkfs/f2fs_format.c
+@@ -574,6 +574,9 @@ static int f2fs_prepare_super_block(void)
+ 
+ 	cure_extension_list();
+ 
++#ifdef __CYGWIN__
++    strncpy(c.version, "5.4.0-128-generic\0", sizeof(c.version));
++#else
+ 	/* get kernel version */
+ 	if (c.kd >= 0) {
+ 		dev_read_version(c.version, 0, VERSION_LEN);
+@@ -582,6 +585,7 @@ static int f2fs_prepare_super_block(void)
+ 	} else {
+ 		get_kernel_uname_version(c.version);
+ 	}
++#endif
+ 
+ 	memcpy(sb->version, c.version, VERSION_LEN);
+ 	memcpy(sb->init_version, c.version, VERSION_LEN);
+-- 
+2.38.1
+

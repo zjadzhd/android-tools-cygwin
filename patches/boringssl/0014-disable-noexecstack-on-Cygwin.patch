@@ -1,0 +1,42 @@
+From d4f99ed8b653d9e908e800251fcd5d5723962fa9 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Thu, 18 Aug 2022 17:13:21 +0800
+Subject: [PATCH 2/2] disable --noexecstack on Cygwin
+
+- wtf
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ crypto/CMakeLists.txt | 2 +-
+ util/BUILD.toplevel   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
+index 6ab74b89..98e4d112 100644
+--- a/crypto/CMakeLists.txt
++++ b/crypto/CMakeLists.txt
+@@ -30,7 +30,7 @@ if(NOT OPENSSL_NO_ASM)
+     endif()
+     set(ASM_EXT S)
+     enable_language(ASM)
+-    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -Wa,--noexecstack")
++    # set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -Wa,--noexecstack")
+ 
+     # Clang's integerated assembler does not support debug symbols.
+     if(NOT CMAKE_ASM_COMPILER_ID MATCHES "Clang")
+diff --git a/util/BUILD.toplevel b/util/BUILD.toplevel
+index cfa695a4..ab3723c4 100644
+--- a/util/BUILD.toplevel
++++ b/util/BUILD.toplevel
+@@ -78,7 +78,7 @@ config_setting(
+ posix_copts = [
+     # Assembler option --noexecstack adds .note.GNU-stack to each object to
+     # ensure that binaries can be built with non-executable stack.
+-    "-Wa,--noexecstack",
++    # "-Wa,--noexecstack",
+ 
+     # This list of warnings should match those in the top-level CMakeLists.txt.
+     "-Wall",
+-- 
+2.38.0
+

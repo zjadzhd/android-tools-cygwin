@@ -1,138 +1,89 @@
 name: build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - cygwin
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  upload-src:
-    name: Upload the source
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
+
     steps:
-      - name: prep ubuntu
-        run: |
-          sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq \
-            ${{ matrix.pkgs }} cmake git golang libbrotli-dev \
-            libgtest-dev liblz4-dev libpcre2-dev libprotobuf-dev libunwind-dev \
-            libusb-1.0-0-dev libzstd-dev make pkg-config
       - name: checkout
         uses: actions/checkout@v3
         with:
-          submodules: true
-      - name: git config
-        run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-      - name: build & install
-        run: |
-          mkdir build && cd build
-          cmake ..
-          make package_source
-      - name: upload package_source
-        uses: actions/upload-artifact@v3
+          submodules: 'recursive'
+
+      - name: install go
+        uses: actions/setup-go@v3
         with:
-          name: package_source
-          path: ${{ github.workspace }}/build/android-tools-*.tar.xz
-  build:
-    runs-on: ubuntu-latest
+          go-version: '1.19.2'
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: "opensuse/leap:15.4"
-            pkgs: "clang gcc11-c++"
-            env1: "CC=clang CXX=clang++"
-          - os: "opensuse/tumbleweed"
-            pkgs: "gcc gcc-c++"
-          - os: "opensuse/tumbleweed"
-            pkgs: clang
-            env1: "CC=clang CXX=clang++"
-          - os: "archlinux:base"
-            pkgs: gcc
-          - os: "archlinux:base"
-            pkgs: clang
-            env1: "CC=clang CXX=clang++"
-          - os: "ubuntu:20.04"
-            pkgs: "gcc-10 g++-10"
-            env1: "CC=gcc-10 CXX=g++-10"
-          - os: "ubuntu:20.04"
-            pkgs: "clang-11 libstdc++-10-dev"
-            env1: "CC=clang-11 CXX=clang++-11"
-          - os: "alpine"
-            pkgs: "gcc"
-            env1: "CC=gcc CXX=g++"
-          - os: "fedora:latest"
-            pkgs: "gcc gcc-g++"
-          - os: "fedora:rawhide"
-            pkgs: "gcc gcc-g++"
-
-    container:
-      image: ${{ matrix.os }}
-      # New versions of glibc use the new clone3() syscall which has not
-      # yet been whitelisted in GitHub's secomp profile. To prevent jobs
-      # using these distros from failing (e.g. OpenSUSE) change the
-      # secomp policy.
-      #
-      # See https://github.com/nmeum/android-tools/pull/48#issuecomment-944893176
-      options: --security-opt seccomp=unconfined
-
-    steps:
-      - name: prep opensuse
-        if: startsWith(matrix.os, 'opensuse')
-        run: |
-          zypper -n ref
-          zypper -n in ${{ matrix.pkgs }} cmake git go gtest pcre2-devel pkgconfig \
-            'pkgconfig(libbrotlicommon)' 'pkgconfig(liblz4)' \
-            'pkgconfig(libunwind-generic)' 'pkgconfig(libusb-1.0)' \
-            'pkgconfig(libzstd)' 'pkgconfig(protobuf)' ninja
-
-      - name: prep archlinux
-        if: startsWith(matrix.os, 'archlinux')
-        run: |
-          pacman -Syu --needed --noconfirm \
-            ${{ matrix.pkgs }} brotli cmake git go gtest libunwind \
-            libusb lz4 pcre2 pkgconfig protobuf zstd ninja
-
-      - name: prep ubuntu
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -yq \
-            ${{ matrix.pkgs }} cmake git golang libbrotli-dev \
-            libgtest-dev liblz4-dev libpcre2-dev libprotobuf-dev libunwind-dev \
-            libusb-1.0-0-dev libzstd-dev pkg-config protobuf-compiler ninja-build
-
-      - name: prep alpine
-        if: startsWith(matrix.os, 'alpine')
-        run: |
-          apk add build-base pcre2-dev linux-headers libusb-dev gtest-dev samurai \
-          go git perl cmake protobuf-dev brotli-dev zstd-dev lz4-dev
-
-      - name: prep fedora
-        if: startsWith(matrix.os, 'fedora')
-        run: |
-          dnf install -y ${{ matrix.pkgs }} cmake ninja-build perl git golang \
-          brotli-devel gtest-devel lz4-devel pcre2-devel protobuf-devel \
-          libusbx-devel libzstd-devel
+      - name: prep cygwin
+        uses: cygwin/cygwin-install-action@master
+        with:
+          packages: |
+            binutils, gcc-core, gcc-g++, patch, libpcre2-devel, python3, python3-devel,
+            wget, ninja, git, perl, cmake, libprotobuf-devel, libbrotli-devel,
+            libzstd-devel, liblz4-devel, zlib-devel
 
       # required for patches
       - name: git config
+        env:
+          SHELLOPTS: igncr
+          CHERE_INVOKING: 1
+        shell: C:\cygwin\bin\bash.exe -eo pipefail '{0}'
         run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
+          git config --global core.autocrlf input
+          git config --global --add safe.directory $(cygpath -u "${{ github.workspace }}")
+          for repo in $(cat .gitmodules | grep -E "path = .+" | gawk '{ print $3 }'); do
+              git config --global --add safe.directory $(cygpath -u "${{ github.workspace }}/${repo}")
+          done
 
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+      - name: build googletest
+        env:
+          SHELLOPTS: igncr
+        shell: C:\cygwin\bin\bash.exe -eo pipefail '{0}'
+        run: |
+          wget https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
+               -O googletest-release-1.12.1.tar.gz
+          tar xf googletest-release-1.12.1.tar.gz
+          cd googletest-release-1.12.1
+          cmake -B build -G Ninja \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCMAKE_INSTALL_LIBDIR=lib \
+                -DBUILD_SHARED_LIBS=ON \
+                -DPYTHON_EXECUTABLE=python3 \
+                -Dgtest_build_tests=OFF \
+                -DBUILD_GMOCK=ON
+          cmake --build build
+          find build -name '*.pump' -print -delete
+          cmake --build build --target install
 
       - name: build & install
+        env:
+          SHELLOPTS: igncr
+          CHERE_INVOKING: 1
+        shell: C:\cygwin\bin\bash.exe -eo pipefail '{0}'
         run: |
-          test -n "${{ matrix.env1 }}" && export ${{ matrix.env1 }}
-          test -n "${{ matrix.env2 }}" && export ${{ matrix.env2 }}
-          mkdir build && cd build
-          cmake -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS" -DCMAKE_BUILD_TYPE=Release -GNinja ..
-          ninja --verbose
+          cmake -B build -G Ninja \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCMAKE_INSTALL_LIBDIR=lib \
+                -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
           echo -e "\n### make install ###\n"
-          ninja install
+          DESTDIR=dists cmake --install build
+          tar czf dists.tar.gz dists
           echo -e "\n### all done ###\n"
+
+      - name: upload dists
+        uses: actions/upload-artifact@v3
+        with:
+          name: dists
+          path: ${{ github.workspace }}/dists.tar.gz

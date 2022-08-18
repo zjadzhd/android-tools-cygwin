@@ -79,9 +79,7 @@ include(CMakeLists.avb.txt)
 install(TARGETS
 	"${ANDROID_MKE2FS_NAME}"
 	make_f2fs
-	adb
 	append2simg
-	fastboot
 	img2simg
 	lpadd
 	lpdump
@@ -92,10 +90,6 @@ install(TARGETS
 	e2fsdroid
 	ext2simg
 	DESTINATION bin)
-
-# Install common completion files.
-install(FILES adb/adb.bash RENAME adb DESTINATION "${COMPLETION_COMMON_DIR}")
-install(FILES core/fastboot/fastboot.bash RENAME fastboot DESTINATION "${COMPLETION_COMMON_DIR}")
 
 # Install license files.
 # Disabled for now, see https://github.com/nmeum/android-tools/issues/30#issuecomment-855365636

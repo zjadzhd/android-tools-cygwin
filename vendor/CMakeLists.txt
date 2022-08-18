@@ -25,6 +25,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 # some part of the code does not support Cygwin yet, so we define __linux__ here.
 add_compile_definitions(__linux__)
 
+# required ig
+add_compile_definitions(_POSIX_TIMERS)
+
 # set this globally for now
 # then remove all other defines
 add_compile_definitions(_GNU_SOURCE)
@@ -44,6 +47,7 @@ add_compile_definitions(off64_t=off_t)
 add_compile_definitions(lseek64=lseek)
 add_compile_definitions(ftruncate64=ftruncate)
 add_compile_definitions(mmap64=mmap)
+add_compile_definitions(PATH_MAX=__PATH_MAX)
 
 include_directories(/usr/include/linux_compat)
 

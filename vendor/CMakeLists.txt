@@ -18,9 +18,19 @@ add_compile_options(-Wno-attributes)
 # silence syntax warns for CXX on Cygwin
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 
+#
+# flags for Cygwin
+#
+
+# some part of the code does not support Cygwin yet, so we define __linux__ here.
+add_compile_definitions(__linux__)
+
 # libfsmgr (required by fastboot) requires a 64-bit off_t for lseek. On
 # 32-bit glibc platforms this is not the case by default.
 add_compile_definitions(_FILE_OFFSET_BITS=64)
+
+# idk whats this but useful to get the build passing
+add_compile_definitions(__USE_LINUX_IOCTL_DEFS)
 
 #
 # aliases for Cygwin missing symbols

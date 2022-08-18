@@ -1,22 +1,7 @@
-# android-tools
+# android-tools for Cygwin
 
 Git repository to make it easier to package certain command line
 utilities provided by [android-tools][android-tools].
-
-# Motivation
-
-[Many][void-linux] [Linux][arch-linux] [distributions][alpine-linux] have
-a package called android-tools. Sadly the upstream build system for
-those tools is rather complex and doesn't allow building the command
-line tools only.
-
-Linux Distribution therefore mostly ship their own build systems for
-building the command line utilities. This repository aims to make
-packaging of android command utilities easier by providing a simple
-CMake based build system and a ready-to-use tarball which doesn't
-require cloning all of the required git repositories manually. Besides
-this makes it easy to collect all patches required to build standalone
-android command line utilities in a central place.
 
 # Status
 
@@ -27,9 +12,6 @@ Currently the following tools are supported:
 * lpdump, lpmake, lpadd, lpflash, lpunpack
 * mkbootimg, unpack_bootimg, repack_bootimg, avbtool
 * mkdtboimg
-
-The build system itself works quite well and is already being used for
-the Alpine Linux [android-tools package][alpine-linux] which I maintain.
 
 # Dependencies
 
@@ -43,6 +25,7 @@ The following libraries are required by android-tools:
 4. [brotli][brotli]
 5. [zstd][zstd]
 6. [lz4][lz4]
+7. [zlib][zlib]
 
 Python 3 is optionally needed as a run-time dependency in order to use
 the `mkbootimg`, `unpack_bootimg`, and `repack_bootimg` scripts which
@@ -66,18 +49,26 @@ These tarballs should be used for packaging and general installation.
 After the tarball was downloaded and extracted android-tools can be
 build and installed as follows:
 
-	$ mkdir build && cd build
-	$ cmake ..
-	$ make
-	$ make install
+````shell
+$ cmake -B build -G Ninja \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_BUILD_TYPE=Release
+$ cmake --build build
+$ cmake --install build
+````
 
 # Generating tarballs
 
 New source tarballs can be created from the Git repository using:
 
-	$ mkdir build && cd build
-	$ cmake ..
-	$ make package_source
+````shell
+$ cmake -B build -G Ninja \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_BUILD_TYPE=Release
+$ ninja -C build package_source
+````
 
 Before a new release is uploaded a new `git-tag(1)` should be created
 for the release. Afterwards the tarball can be uploaded to the [GitHub
@@ -85,15 +76,18 @@ Release Page][release-page].
 
 # See also
 
+The original Alpine Linux [android-tools repo][upstream-repo] by [nmeum][original-author]
+which this project bases on.
+
 The Arch Linux [android-tools package][arch-linux] by [Anatol Pomozov][anatol.pomozov]
 which inspired this project. Most definitions in the `CMakeLists.txt`
 have been copied from Anatol's ruby script.
 
+[upstream-repo]: https://github.com/nmeum/android-tools
+[original-author]: https://github.com/nmeum
 [android-tools]: https://sites.google.com/a/android.com/tools/
-[void-linux]: https://github.com/void-linux/void-packages/tree/master/srcpkgs/android-tools
 [arch-linux]: https://www.archlinux.org/packages/community/x86_64/android-tools/
-[alpine-linux]: https://pkgs.alpinelinux.org/package/edge/testing/x86_64/android-tools
-[release-page]: https://github.com/nmeum/android-tools/releases
+[release-page]: https://github.com/ookiineko/android-tools-cygwin/releases
 [PCRE]: http://pcre.sourceforge.net/
 [gtest]: https://github.com/google/googletest
 [gcc]: https://gcc.gnu.org/
@@ -106,4 +100,5 @@ have been copied from Anatol's ruby script.
 [zstd]: https://facebook.github.io/zstd/
 [lz4]: https://github.com/lz4/lz4
 [anatol.pomozov]: https://github.com/anatol
+[zlib]: https://zlib.net
 [linux_compat]: https://github.com/ookiineko/linux_compat

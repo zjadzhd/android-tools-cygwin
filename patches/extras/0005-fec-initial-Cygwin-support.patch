@@ -1,0 +1,49 @@
+From de3831d3613b6b59ad6ded0db5cd5d901524ffb2 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 16 Oct 2022 18:53:13 +0800
+Subject: [PATCH] fec: initial Cygwin support
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ libfec/fec_open.cpp  | 2 ++
+ verity/fec/image.cpp | 4 +++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/libfec/fec_open.cpp b/libfec/fec_open.cpp
+index 175207b..8ea728e 100644
+--- a/libfec/fec_open.cpp
++++ b/libfec/fec_open.cpp
+@@ -27,6 +27,8 @@
+     #include <sys/disk.h>
+     #define BLKGETSIZE64 DKIOCGETBLOCKCOUNT
+     #define fdatasync(fd) fcntl((fd), F_FULLFSYNC)
++#elif defined(__CYGWIN__)
++    #include <cygwin/fs.h>
+ #endif
+ 
+ #include "avb_utils.h"
+diff --git a/verity/fec/image.cpp b/verity/fec/image.cpp
+index 43baeec..d719e7c 100644
+--- a/verity/fec/image.cpp
++++ b/verity/fec/image.cpp
+@@ -41,6 +41,8 @@ extern "C" {
+     #include <sys/disk.h>
+     #define BLKGETSIZE64 DKIOCGETBLOCKCOUNT
+     #define O_LARGEFILE 0
++#elif defined(__CYGWIN__)
++    #include <cygwin/fs.h>
+ #endif
+ 
+ void image_init(image *ctx)
+@@ -156,7 +158,7 @@ bool image_load(const std::vector<std::string>& filenames, image *ctx)
+     std::vector<int> fds;
+ 
+     for (const auto& fn : filenames) {
+-        int fd = TEMP_FAILURE_RETRY(open(fn.c_str(), flags | O_LARGEFILE));
++        int fd = TEMP_FAILURE_RETRY(open(fn.c_str(), flags));
+ 
+         if (fd < 0) {
+             FATAL("failed to open file '%s': %s\n", fn.c_str(), strerror(errno));
+-- 
+2.38.0
+

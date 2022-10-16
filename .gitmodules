@@ -68,3 +68,9 @@
 [submodule "vendor/zlib"]
 	path = vendor/zlib
 	url = https://github.com/madler/zlib.git
+[submodule "vendor/fec"]
+	path = vendor/fec
+	url = https://android.googlesource.com/platform/external/fec.git
+[submodule "vendor/squashfs-tools"]
+	path = vendor/squashfs-tools
+	url = https://android.googlesource.com/platform/external/squashfs-tools.git

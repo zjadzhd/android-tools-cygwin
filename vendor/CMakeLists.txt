@@ -47,6 +47,8 @@ add_compile_definitions(off64_t=off_t)
 add_compile_definitions(lseek64=lseek)
 add_compile_definitions(ftruncate64=ftruncate)
 add_compile_definitions(mmap64=mmap)
+add_compile_definitions(pread64=pread)
+add_compile_definitions(pwrite64=pwrite)
 add_compile_definitions(PATH_MAX=__PATH_MAX)
 
 include_directories(/usr/include/linux_compat)
@@ -67,7 +69,9 @@ set(android-vendored
 	incremental_delivery
 	fmtlib
 	boringssl
-	mkbootimg)
+	mkbootimg
+	fec
+	squashfs-tools)
 
 # XXX: Consider using https://cmake.org/cmake/help/v3.0/module/ExternalProject.html
 if(ANDROID_TOOLS_PATCH_VENDOR AND EXISTS "${ANDROID_PATCH_DIR}/")
@@ -108,6 +112,7 @@ include(CMakeLists.mkbootimg.txt)
 include(CMakeLists.libufdt.txt)
 include(CMakeLists.avb.txt)
 include(CMakeLists.zlib.txt)
+include(CMakeLists.fec.txt)
 
 # Targets which should be installed by `make install`.
 install(TARGETS
@@ -125,6 +130,7 @@ install(TARGETS
 	ext2simg
 	minigzip
 	mkbootfs
+	fec
 	DESTINATION bin)
 
 # Install license files.

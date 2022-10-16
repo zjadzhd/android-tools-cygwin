@@ -51,11 +51,10 @@ build and installed as follows:
 
 ````shell
 $ cmake -B build -G Ninja \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_INSTALL_PREFIX=/ \
         -DCMAKE_BUILD_TYPE=Release
 $ cmake --build build
-$ cmake --install build
+$ DESTDIR=install cmake --install build
 ````
 
 # Generating tarballs
@@ -64,8 +63,7 @@ New source tarballs can be created from the Git repository using:
 
 ````shell
 $ cmake -B build -G Ninja \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_INSTALL_PREFIX=/ \
         -DCMAKE_BUILD_TYPE=Release
 $ ninja -C build package_source
 ````

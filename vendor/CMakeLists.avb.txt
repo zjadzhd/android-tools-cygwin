@@ -1,1 +1,1 @@
-install(PROGRAMS avb/avbtool.py DESTINATION bin RENAME avbtool)
+install(PROGRAMS avb/avbtool.py DESTINATION . RENAME avbtool)

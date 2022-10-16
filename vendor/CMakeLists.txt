@@ -131,7 +131,7 @@ install(TARGETS
 	minigzip
 	mkbootfs
 	fec
-	DESTINATION bin)
+	DESTINATION .)
 
 # Install license files.
 # Disabled for now, see https://github.com/nmeum/android-tools/issues/30#issuecomment-855365636

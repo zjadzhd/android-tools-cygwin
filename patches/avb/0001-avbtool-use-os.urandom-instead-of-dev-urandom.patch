@@ -1,0 +1,40 @@
+From dd06513cde4c4de09bf8a14801fedebfb744b860 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 16 Oct 2022 13:32:25 +0800
+Subject: [PATCH] avbtool: use os.urandom instead of /dev/urandom
+
+* this does not affect the use under Linux but also make it
+  compatible with Windows and other platforms.
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ avbtool.py | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/avbtool.py b/avbtool.py
+index f944af4..2098d7c 100755
+--- a/avbtool.py
++++ b/avbtool.py
+@@ -3461,8 +3461,7 @@ class Avb(object):
+         # size as the hash size. Don't populate a random salt if this
+         # descriptor is being created to use a persistent digest on device.
+         hash_size = digest_size
+-        with open('/dev/urandom', 'rb') as f:
+-          salt = f.read(hash_size)
++        salt = os.urandom(hash_size)
+       else:
+         salt = b''
+ 
+@@ -3701,8 +3700,7 @@ class Avb(object):
+         # size as the hash size. Don't populate a random salt if this
+         # descriptor is being created to use a persistent digest on device.
+         hash_size = digest_size
+-        with open('/dev/urandom', 'rb') as f:
+-          salt = f.read(hash_size)
++        salt = os.urandom(hash_size)
+       else:
+         salt = b''
+ 
+-- 
+2.38.0
+

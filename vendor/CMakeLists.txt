@@ -66,7 +66,8 @@ set(android-vendored
 	e2fsprogs
 	incremental_delivery
 	fmtlib
-	boringssl)
+	boringssl
+	mkbootimg)
 
 # XXX: Consider using https://cmake.org/cmake/help/v3.0/module/ExternalProject.html
 if(ANDROID_TOOLS_PATCH_VENDOR AND EXISTS "${ANDROID_PATCH_DIR}/")

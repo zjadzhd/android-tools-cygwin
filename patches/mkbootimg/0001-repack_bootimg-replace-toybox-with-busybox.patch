@@ -1,0 +1,34 @@
+From 07b4bc25fa006d3b0af6f6c7f58a667b25749408 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Sun, 16 Oct 2022 15:17:51 +0800
+Subject: [PATCH] repack_bootimg: replace toybox with busybox
+
+* lazy to port toybox to Cygwin/Windows, let's just use BusyBox!!!(
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ repack_bootimg.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/repack_bootimg.py b/repack_bootimg.py
+index 93c28f9..3a13172 100755
+--- a/repack_bootimg.py
++++ b/repack_bootimg.py
+@@ -120,12 +120,12 @@ class RamdiskImage:
+                 break
+ 
+         if self._ramdisk_format is not None:
+-            # toybox cpio arguments:
++            # busybox cpio arguments:
+             #   -i: extract files from stdin
+             #   -d: create directories if needed
+             #   -u: override existing files
+             subprocess.run(
+-                ['toybox', 'cpio', '-idu'], check=True,
++                ['busybox', 'cpio', '-idu'], check=True,
+                 input=decompressed_result.stdout, cwd=self._ramdisk_dir)
+ 
+             print(f"=== Unpacked ramdisk: '{self._ramdisk_img}' at "
+-- 
+2.38.0
+

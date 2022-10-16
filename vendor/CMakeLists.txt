@@ -107,6 +107,7 @@ include(CMakeLists.partition.txt)
 include(CMakeLists.mkbootimg.txt)
 include(CMakeLists.libufdt.txt)
 include(CMakeLists.avb.txt)
+include(CMakeLists.zlib.txt)
 
 # Targets which should be installed by `make install`.
 install(TARGETS
@@ -122,6 +123,7 @@ install(TARGETS
 	simg2img
 	e2fsdroid
 	ext2simg
+	minigzip
 	DESTINATION bin)
 
 # Install license files.

@@ -1,0 +1,5 @@
+add_executable(minigzip
+	zlib/test/minigzip.c)
+
+target_link_libraries(minigzip
+	z -static)

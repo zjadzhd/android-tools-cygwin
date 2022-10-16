@@ -65,3 +65,6 @@
 [submodule "vendor/libufdt"]
 	path = vendor/libufdt
 	url = https://android.googlesource.com/platform/system/libufdt.git
+[submodule "vendor/zlib"]
+	path = vendor/zlib
+	url = https://github.com/madler/zlib.git

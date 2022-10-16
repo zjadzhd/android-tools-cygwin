@@ -124,6 +124,7 @@ install(TARGETS
 	e2fsdroid
 	ext2simg
 	minigzip
+	mkbootfs
 	DESTINATION bin)
 
 # Install license files.

@@ -12,6 +12,7 @@ Currently the following tools are supported:
 * lpdump, lpmake, lpadd, lpflash, lpunpack
 * mkbootimg, unpack_bootimg, repack_bootimg, avbtool
 * mkdtboimg
+* cygpath
 
 # Dependencies
 

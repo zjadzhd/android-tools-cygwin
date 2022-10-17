@@ -115,6 +115,7 @@ jobs:
           cp -v /usr/libexec/busybox-standalone/bin/busybox.exe .
           cp -v `which lz4` lz4.exe
           cp -v `which openssl` openssl.exe
+          cp -v `which cygpath` cygpath.exe
           set +e
           set +o pipefail
           ../scripts/cygwin-standalone-release.sh

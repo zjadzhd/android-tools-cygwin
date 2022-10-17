@@ -2,9 +2,13 @@ name: build
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
     branches:
       - cygwin
   pull_request:
+    paths-ignore:
+      - 'README.md'
   workflow_dispatch:
 
 jobs:

@@ -17,7 +17,7 @@ option(ANDROID_TOOLS_PATCH_VENDOR "Patch vendor projects using patches directory
 # configured here.
 #
 # See also: https://bugs.archlinux.org/task/56955
-set(ANDROID_MKE2FS_NAME "mke2fs.android")
+set(ANDROID_MKE2FS_NAME "mke2fs")
 
 # Version of android-tools and the version of boringssl being used.
 # See: https://android.googlesource.com/platform/external/boringssl/+/platform-tools-${ANDROID_VERSION}/BORINGSSL_REVISION

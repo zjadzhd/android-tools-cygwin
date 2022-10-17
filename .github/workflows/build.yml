@@ -32,7 +32,7 @@ jobs:
           packages: |
             binutils, gcc-core, gcc-g++, patch, libpcre2-devel, python3, python3-devel, wget,
             ninja, git, perl, cmake, libprotobuf-devel, libbrotli-devel, libzstd-devel,
-            liblz4-devel, zlib-devel, upx, busybox-standalone, lz4, openssl
+            liblz4-devel, zlib-devel, upx, busybox-standalone, lz4, openssl, busybox
 
       - name: install pyinstaller
         env:
@@ -116,6 +116,12 @@ jobs:
           cp -v `which lz4` lz4.exe
           cp -v `which openssl` openssl.exe
           cp -v `which cygpath` cygpath.exe
+          wget https://dl.google.com/android/repository/platform-tools-latest-windows.zip -O platform-tools.zip
+          busybox unzip platform-tools.zip
+          cp -v platform-tools/{adb,fastboot,dmtracedump,etc1tool,hprof-conv,sqlite3}.exe .
+          cp -v platform-tools/{AdbWinApi,AdbWinUsbApi,libwinpthread-1}.dll .
+          cp -v platform-tools/{NOTICE.txt,source.properties} .
+          rm -rf platform-tools platform-tools.zip
           set +e
           set +o pipefail
           ../scripts/cygwin-standalone-release.sh

@@ -7,7 +7,10 @@ utilities provided by [android-tools][android-tools].
 
 Currently the following tools are supported:
 
-* mke2fs.android, make_f2fs
+* adb
+* fastboot
+* dmtracedump, etc1tool, hprof-conv, sqlite3
+* mke2fs, make_f2fs (required by fastboot)
 * simg2img, img2simg, append2simg
 * lpdump, lpmake, lpadd, lpflash, lpunpack
 * mkbootimg, unpack_bootimg, repack_bootimg, avbtool

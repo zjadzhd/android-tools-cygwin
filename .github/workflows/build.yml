@@ -127,12 +127,10 @@ jobs:
           ../scripts/cygwin-standalone-release.sh
           set -e
           set -o pipefail
-          cd ..
-          tar czf dists.tar.gz dists
           echo -e "\n### all done ###\n"
 
       - name: upload dists
         uses: actions/upload-artifact@v3
         with:
           name: dists
-          path: ${{ github.workspace }}/dists.tar.gz
+          path: ${{ github.workspace }}/dists

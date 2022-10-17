@@ -116,6 +116,9 @@ jobs:
           cp -v `which lz4` lz4.exe
           cp -v `which openssl` openssl.exe
           cp -v `which cygpath` cygpath.exe
+          wget https://github.com/Genymobile/scrcpy/releases/download/v1.24/scrcpy-win64-v1.24.zip -O scrcpy64.zip
+          busybox unzip scrcpy64.zip
+          rm -f adb.exe AdbWinApi.dll AdbWinUsbApi.dll scrcpy64.zip
           wget https://dl.google.com/android/repository/platform-tools-latest-windows.zip -O platform-tools.zip
           busybox unzip platform-tools.zip
           cp -v platform-tools/{adb,fastboot,dmtracedump,etc1tool,hprof-conv,sqlite3}.exe .

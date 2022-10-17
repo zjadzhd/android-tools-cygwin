@@ -10,6 +10,7 @@ Currently the following tools are supported:
 * adb
 * fastboot
 * dmtracedump, etc1tool, hprof-conv, sqlite3
+* scrcpy
 * mke2fs, make_f2fs (required by fastboot)
 * simg2img, img2simg, append2simg
 * lpdump, lpmake, lpadd, lpflash, lpunpack

@@ -103,8 +103,15 @@ jobs:
           echo -e "\n### make install ###\n"
           DESTDIR=dists cmake --install build
           cd dists
+          echo -e "\n### strip symbols ###\n"
+          bins=$(ls -1 ./*.exe)
+          for bin in $bins; do
+          echo "stripping unneeded symbols for '${bin}'"
+          strip --strip-unneeded "${bin}"
+          done
           export PATH="/usr/local/bin:${PATH}"
           hash -r
+          echo -e "\n### pyinstaller-ify ###\n"
           for script in $(file `find . -maxdepth 1 -type f` | grep "Python script" | gawk -F ':' '{ print $1 }'); do
               pyinstaller -F "${script}"
               mv -v dist/"${script}".exe .
@@ -112,6 +119,7 @@ jobs:
           done
           leftovers=$(find . -mindepth 1 -maxdepth 1 -type d)
           [[ ! -z "${leftovers}" ]] && rm -rf "${leftovers}"
+          echo -e "\n### fetch external binaries ###\n"
           cp -v /usr/libexec/busybox-standalone/bin/busybox.exe .
           cp -v `which lz4` lz4.exe
           cp -v `which openssl` openssl.exe
@@ -125,12 +133,13 @@ jobs:
           cp -v platform-tools/{AdbWinApi,AdbWinUsbApi,libwinpthread-1}.dll .
           cp -v platform-tools/{NOTICE.txt,source.properties} .
           rm -rf platform-tools platform-tools.zip
+          echo -e "\n### export standalone release ###\n"
           set +e
           set +o pipefail
           ../scripts/cygwin-standalone-release.sh
           set -e
           set -o pipefail
-          echo -e "\n### all done ###\n"
+          echo -e "\n### all done, upload artifacts ###\n"
 
       - name: upload dists
         uses: actions/upload-artifact@v3

@@ -12,6 +12,7 @@ Currently the following tools are supported:
 * dmtracedump, etc1tool, hprof-conv, sqlite3
 * scrcpy
 * mke2fs, make_f2fs (required by fastboot)
+* [e2fstool][e2fstool]
 * simg2img, img2simg, append2simg
 * lpdump, lpmake, lpadd, lpflash, lpunpack
 * mkbootimg, unpack_bootimg, repack_bootimg, avbtool
@@ -106,4 +107,5 @@ have been copied from Anatol's ruby script.
 [lz4]: https://github.com/lz4/lz4
 [anatol.pomozov]: https://github.com/anatol
 [zlib]: https://zlib.net
+[e2fstool]: https://github.com/svoboda18/e2fstool
 [linux_compat]: https://github.com/ookiineko/linux_compat

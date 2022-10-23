@@ -74,3 +74,6 @@
 [submodule "vendor/squashfs-tools"]
 	path = vendor/squashfs-tools
 	url = https://android.googlesource.com/platform/external/squashfs-tools.git
+[submodule "vendor/e2fstool"]
+	path = vendor/e2fstool
+	url = https://github.com/svoboda18/e2fstool.git

@@ -66,6 +66,7 @@ set(android-vendored
 	selinux
 	f2fs-tools
 	e2fsprogs
+	e2fstool
 	incremental_delivery
 	fmtlib
 	boringssl
@@ -127,6 +128,7 @@ install(TARGETS
 	lpunpack
 	simg2img
 	e2fsdroid
+	e2fstool
 	ext2simg
 	minigzip
 	mkbootfs

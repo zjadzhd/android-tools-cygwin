@@ -145,3 +145,54 @@ target_link_libraries(ext2simg
 	libext2fs libsparse libbase libzip liblog libutil z pthread -static)
 target_include_directories(ext2simg PRIVATE
 	e2fsprogs/lib core/libsparse/include)
+
+add_library(libext2_com_err STATIC
+	e2fsprogs/lib/et/error_message.c
+	e2fsprogs/lib/et/et_name.c
+	e2fsprogs/lib/et/init_et.c
+	e2fsprogs/lib/et/com_err.c
+	e2fsprogs/lib/et/com_right.c)
+target_compile_options(libext2_com_err PRIVATE
+	-Wno-pointer-arith -Wno-typedef-redefinition -Wno-unused-parameter -Wno-unused-variable)
+target_include_directories(libext2_com_err PUBLIC
+	e2fsprogs/lib e2fsprogs/lib/et)
+
+add_library(libext2_e2p STATIC
+	e2fsprogs/lib/e2p/encoding.c
+	e2fsprogs/lib/e2p/errcode.c
+	e2fsprogs/lib/e2p/feature.c
+	e2fsprogs/lib/e2p/fgetflags.c
+	e2fsprogs/lib/e2p/fsetflags.c
+	e2fsprogs/lib/e2p/fgetproject.c
+	e2fsprogs/lib/e2p/fsetproject.c
+	e2fsprogs/lib/e2p/fgetversion.c
+	e2fsprogs/lib/e2p/fsetversion.c
+	e2fsprogs/lib/e2p/getflags.c
+	e2fsprogs/lib/e2p/getversion.c
+	e2fsprogs/lib/e2p/hashstr.c
+	e2fsprogs/lib/e2p/iod.c
+	e2fsprogs/lib/e2p/ljs.c
+	e2fsprogs/lib/e2p/ls.c
+	e2fsprogs/lib/e2p/mntopts.c
+	e2fsprogs/lib/e2p/parse_num.c
+	e2fsprogs/lib/e2p/pe.c
+	e2fsprogs/lib/e2p/pf.c
+	e2fsprogs/lib/e2p/ps.c
+	e2fsprogs/lib/e2p/setflags.c
+	e2fsprogs/lib/e2p/setversion.c
+	e2fsprogs/lib/e2p/uuid.c
+	e2fsprogs/lib/e2p/ostype.c
+	e2fsprogs/lib/e2p/percent.c)
+target_compile_options(libext2_e2p PRIVATE
+	-Wno-pointer-arith
+	-Wno-typedef-redefinition
+	-Wno-unused-parameter
+	-Wno-unused-variable
+	-Wno-error=attributes)
+target_include_directories(libext2_e2p PUBLIC
+	e2fsprogs/lib e2fsprogs/lib/e2p)
+
+add_executable(e2fstool
+	e2fstool/e2fstool.c)
+target_link_libraries(e2fstool
+	libext2_com_err libext2_e2p libext2fs libsparse libbase z -static)

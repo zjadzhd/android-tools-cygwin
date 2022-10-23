@@ -11,9 +11,9 @@ Currently the following tools are supported:
 * fastboot
 * dmtracedump, etc1tool, hprof-conv, sqlite3
 * scrcpy
-* mke2fs, make_f2fs (required by fastboot)
+* mke2fs, make_f2fs, e2fsdroid (required by fastboot)
 * [e2fstool][e2fstool]
-* simg2img, img2simg, append2simg
+* simg2img, img2simg, append2simg, ext2simg
 * lpdump, lpmake, lpadd, lpflash, lpunpack
 * mkbootimg, unpack_bootimg, repack_bootimg, avbtool
 * mkdtboimg

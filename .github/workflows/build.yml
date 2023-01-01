@@ -97,6 +97,8 @@ jobs:
         shell: bash
         run: |
           rm -rf vendor/e2fstool
+          rm -rf vendor/e2fsprogs
+          git clone https://github.com/zjadzhd/e2fsprogs.git -b master vendor/e2fsprogs
           git clone https://github.com/zjadzhd/e2fstool.git -b 1 vendor/e2fstool
           cmake -B build -G Ninja \
                 -DCMAKE_INSTALL_PREFIX=/ \
